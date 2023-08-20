@@ -1,13 +1,13 @@
 package ru.smirnov.trackmail.dto;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import ru.smirnov.trackmail.model.Status;
 
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
+@Builder
 public class HistoryDto {
     private long id;
     private Status status;
