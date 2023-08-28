@@ -3,8 +3,11 @@ package ru.smirnov.trackmail.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.smirnov.trackmail.dto.HistoryDto;
 import ru.smirnov.trackmail.dto.PostalPackageDto;
 import ru.smirnov.trackmail.service.PostalPackageServiceImpl;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/packages")
@@ -34,5 +37,23 @@ public class PostalPackageController {
                                                    @RequestHeader(POSTAL_PACKAGE_ID) long postalPackageId) {
         log.info("POST: /package/departed = controller departedFromPostOffice");
         return postalPackageService.departedFromPostOffice(postalPackageId, officeId);
+    }
+
+    @PostMapping("/received")
+    public PostalPackageDto receivedByAddressee(@RequestHeader(POSTAL_PACKAGE_ID) long postalPackageId) {
+        log.info("POST: /package/received = controller receivedByAddressee");
+        return postalPackageService.receivedByAddressee(postalPackageId);
+    }
+
+    @GetMapping("/{id}")
+    public List<HistoryDto> findAllHistoryByPostalPackageId(@PathVariable long id) {
+        log.info("GET: /package/{} = controller findAllHistoryByPostalPackageId", id);
+        return postalPackageService.findAllHistoryByPostalPackageId(id);
+    }
+
+    @GetMapping("/status/{id}")
+    public HistoryDto findStatusOfPostalPackageById(@PathVariable long id) {
+        log.info("GET: /package/status/{} = controller findStatusOfPostalPackageById", id);
+        return postalPackageService.findStatusOfPostalPackageById(id);
     }
 }

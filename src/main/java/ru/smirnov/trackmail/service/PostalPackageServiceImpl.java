@@ -16,7 +16,10 @@ import ru.smirnov.trackmail.repository.PostOfficeRepository;
 import ru.smirnov.trackmail.repository.PostalPackageRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import static ru.smirnov.trackmail.mapper.HistoryMapper.toHistory;
 import static ru.smirnov.trackmail.mapper.PostalPackageMapper.toDto;
 import static ru.smirnov.trackmail.mapper.PostalPackageMapper.toPostalPackage;
 
@@ -42,7 +45,7 @@ public class PostalPackageServiceImpl {
 
         //Сохраняем историю движения почтового отправления в бд
         log.info("Service: save new History to db");
-        historyRepository.save(HistoryMapper.toHistory(historyDto, postalPackage, office));
+        historyRepository.save(toHistory(historyDto, postalPackage, office));
 
         //Сохраняем почтовое отправление в бд
         log.info("Service: save new postalPackage to db");
@@ -62,7 +65,7 @@ public class PostalPackageServiceImpl {
 
         //Сохраняем историю перемещения почтового отправления в бд
         log.info("Service: save new History to db when postalPackage was arrived at the intermediate post office");
-        historyRepository.save(HistoryMapper.toHistory(historyDto, postalPackage, office));
+        historyRepository.save(toHistory(historyDto, postalPackage, office));
 
         return toDto(postalPackage);
     }
@@ -80,11 +83,42 @@ public class PostalPackageServiceImpl {
 
         //Сохраняем историю перемещения почтового отправления в бд
         log.info("Service: save new History to db when postalPackage was departed from intermediate post office");
-        historyRepository.save(HistoryMapper.toHistory(historyDto, postalPackage, office));
+        historyRepository.save(toHistory(historyDto, postalPackage, office));
 
         return toDto(postalPackage);
     }
 
+    public PostalPackageDto receivedByAddressee(long postalPackageId) {
+        //Проверяем существует ли почтовое отправление
+        var postalPackage = getPostalPackageIfExists(postalPackageId);
+
+        //Создаем объект хранящий историю перемещения почтового отправления
+        //добавляем в него время получения адресатом, адрес и статус "получен" ("DELIVERED")
+        var historyDto = createHistoryDto(postalPackage.getRecipientAddress(), Status.DELIVERED);
+
+        log.info("Service: save new History to db when postalPackage was delivered by addressee");
+        historyRepository.save(toHistory(historyDto, postalPackage, null));
+        return toDto(postalPackage);
+    }
+
+    public List<HistoryDto> findAllHistoryByPostalPackageId(long id) {
+        //Проверяем существует ли почтовое отправление
+        getPostalPackageIfExists(id);
+
+        //Возвращаем полную историю перемещения почтового отправления
+        log.info("Service: find all history by postalPackageId");
+        return historyRepository.findAllByPostalPackageIdOrderByDateTimeDesc(id).stream()
+                .map(HistoryMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public HistoryDto findStatusOfPostalPackageById(long id) {
+        //Проверяем существует ли почтовое отправление
+        getPostalPackageIfExists(id);
+
+        log.info("Service: find latest History by postalPackageId");
+        return HistoryMapper.toDto(historyRepository.findFirstByPostalPackageIdOrderByDateTimeDesc(id));
+    }
 
     /**
      * Метод возвращает почтовое отправление, если оно существует в бд, иначе бросает исключение
@@ -123,6 +157,4 @@ public class PostalPackageServiceImpl {
         return postOfficeRepository.findById(officeId)
                 .orElseThrow(() -> new NotFoundException("PostOffice with id=" + officeId + " not found"));
     }
-
-
 }
