@@ -28,4 +28,11 @@ public class PostalPackageController {
         log.info("POST: /packages/arrived = controller arrivedToNextPostOffice");
         return postalPackageService.arrivedToNextPostOffice(postalPackageId, officeId);
     }
+
+    @PostMapping("/departed")
+    public PostalPackageDto departedFromPostOffice(@RequestHeader(OFFICE_ID) long officeId,
+                                                   @RequestHeader(POSTAL_PACKAGE_ID) long postalPackageId) {
+        log.info("POST: /package/departed = controller departedFromPostOffice");
+        return postalPackageService.departedFromPostOffice(postalPackageId, officeId);
+    }
 }
