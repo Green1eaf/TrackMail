@@ -12,11 +12,20 @@ import ru.smirnov.trackmail.service.PostalPackageServiceImpl;
 @Slf4j
 public class PostalPackageController {
     private final PostalPackageServiceImpl postalPackageService;
+    private static final String OFFICE_ID = "X-Sharer-Office-Id";
+    private static final String POSTAL_PACKAGE_ID = "X-Sharer-Postal-Package-Id";
 
     @PostMapping("/register")
     public PostalPackageDto register(@RequestBody PostalPackageDto dto,
-                                     @RequestHeader("X-Sharer-Office-Id") long officeId) {
+                                     @RequestHeader(OFFICE_ID) long officeId) {
         log.info("POST: /packages/register = controller register done");
         return postalPackageService.register(dto, officeId);
+    }
+
+    @PostMapping("/arrived")
+    public PostalPackageDto arrivedToNextPostOffice(@RequestHeader(OFFICE_ID) long officeId,
+                                                    @RequestHeader(POSTAL_PACKAGE_ID) long postalPackageId) {
+        log.info("POST: /packages/arrived = controller arrivedToNextPostOffice");
+        return postalPackageService.arrivedToNextPostOffice(postalPackageId, officeId);
     }
 }

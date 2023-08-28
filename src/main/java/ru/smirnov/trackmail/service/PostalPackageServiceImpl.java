@@ -8,6 +8,7 @@ import ru.smirnov.trackmail.dto.HistoryDto;
 import ru.smirnov.trackmail.dto.PostalPackageDto;
 import ru.smirnov.trackmail.exception.NotFoundException;
 import ru.smirnov.trackmail.mapper.HistoryMapper;
+import ru.smirnov.trackmail.model.PostOffice;
 import ru.smirnov.trackmail.model.Status;
 import ru.smirnov.trackmail.repository.HistoryRepository;
 import ru.smirnov.trackmail.repository.PostOfficeRepository;
@@ -28,16 +29,66 @@ public class PostalPackageServiceImpl {
 
     @Transactional
     public PostalPackageDto register(PostalPackageDto postalPackageDto, long officeId) {
-        var office = postOfficeRepository.findById(officeId)
-                .orElseThrow(() -> new NotFoundException("PostOffice with id=" + officeId + " not found"));
-        var historyDto = HistoryDto.builder()
-                .status(Status.REGISTERED)
-                .dateTime(LocalDateTime.now())
-                .officeAddress(office.getAddress())
-                .build();
+        //Проверяем существует ли почтовое отделение
+        var office = getPostOfficeIfExists(officeId);
+
+        //Создаем объект хранящий историю перемещения почтового отправления
+        //добавляем в него время регистрации, адрес офиса и статус "зарегистрирован" ("REGISTERED")
+        var historyDto = createHistoryDto(office.getAddress(), Status.REGISTERED);
+
+        //Мапим ДТО объект в сущность для сохранения в бд
         var postalPackage = toPostalPackage(postalPackageDto);
-        log.info("Service: save new postalPackage to db");
+
+        //Сохраняем историю движения почтового отправления в бд
+        log.info("Service: save new History to db");
         historyRepository.save(HistoryMapper.toHistory(historyDto, postalPackage, office));
+
+        //Сохраняем почтовое отправление в бд
+        log.info("Service: save new postalPackage to db");
         return toDto(postalPackageRepository.save(postalPackage));
+    }
+
+    public PostalPackageDto arrivedToNextPostOffice(long postalPackageId, long officeId) {
+        //Проверяем существует ли почтовое отделение
+        var office = getPostOfficeIfExists(officeId);
+
+        //Создаем объект хранящий историю перемещения почтового отправления
+        //добавляем в него время регистрации, адрес офиса и статус "прибыл" ("ARRIVED")
+        var historyDto = createHistoryDto(office.getAddress(), Status.ARRIVED);
+
+        //Проверяем существует ли почтовое отправление
+        var postalPackage = postalPackageRepository.findById(postalPackageId)
+                .orElseThrow(() -> new NotFoundException("PostalPackage with id=" + postalPackageId + " not found"));
+
+        //Сохраняем историю перемещения почтового отправления в бд
+        log.info("Service: save new History to db when postalPackage was arrived at the intermediate post office");
+        historyRepository.save(HistoryMapper.toHistory(historyDto, postalPackage, office));
+
+        return toDto(postalPackage);
+    }
+
+    /**
+     * Метод создает историю перемещения почтового отправления
+     * @param officeAddress = адрес почтового отделения
+     * @param status = статус почтового отправления
+     * @return HistoryDto
+     */
+    private HistoryDto createHistoryDto(String officeAddress, Status status) {
+        return HistoryDto.builder()
+                .status(status)
+                .dateTime(LocalDateTime.now())
+                .officeAddress(officeAddress)
+                .build();
+    }
+
+    /**
+     * Если почтовое отделение существует, то метод вернет его.
+     * Если такого почтового отделения не существует, то выбросит исключение
+     * @param officeId = id почтового отделения
+     * @return PostOffice
+     */
+    private PostOffice getPostOfficeIfExists(long officeId) {
+        return postOfficeRepository.findById(officeId)
+                .orElseThrow(() -> new NotFoundException("PostOffice with id=" + officeId + " not found"));
     }
 }
