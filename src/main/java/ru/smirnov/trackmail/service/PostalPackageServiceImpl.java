@@ -52,6 +52,7 @@ public class PostalPackageServiceImpl {
         return toDto(postalPackageRepository.save(postalPackage));
     }
 
+    @Transactional
     public PostalPackageDto arrivedToNextPostOffice(long postalPackageId, long officeId) {
         //Проверяем существует ли почтовое отделение
         var office = getPostOfficeIfExists(officeId);
@@ -70,6 +71,7 @@ public class PostalPackageServiceImpl {
         return toDto(postalPackage);
     }
 
+    @Transactional
     public PostalPackageDto departedFromPostOffice(long postalPackageId, long officeId) {
         //Проверяем существует ли почтовое отделение
         var office = getPostOfficeIfExists(officeId);
@@ -88,6 +90,7 @@ public class PostalPackageServiceImpl {
         return toDto(postalPackage);
     }
 
+    @Transactional
     public PostalPackageDto receivedByAddressee(long postalPackageId) {
         //Проверяем существует ли почтовое отправление
         var postalPackage = getPostalPackageIfExists(postalPackageId);
@@ -101,6 +104,7 @@ public class PostalPackageServiceImpl {
         return toDto(postalPackage);
     }
 
+    @Transactional(readOnly = true)
     public List<HistoryDto> findAllHistoryByPostalPackageId(long id) {
         //Проверяем существует ли почтовое отправление
         getPostalPackageIfExists(id);
@@ -112,6 +116,7 @@ public class PostalPackageServiceImpl {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public HistoryDto findStatusOfPostalPackageById(long id) {
         //Проверяем существует ли почтовое отправление
         getPostalPackageIfExists(id);
