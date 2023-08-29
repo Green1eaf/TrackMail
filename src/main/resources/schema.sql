@@ -21,4 +21,9 @@ CREATE TABLE IF NOT EXISTS history
     date_time  TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
     office_id  BIGINT REFERENCES office (id) ON DELETE CASCADE,
     package_id BIGINT REFERENCES package (id) ON DELETE CASCADE
-)
+);
+
+-- добавляем пару почтовых офисов
+INSERT INTO office (name, address)
+VALUES ('Great Mail', 'Russia, Moscow'),
+       ('Turtle Mail', 'Russia, Moscow City');
