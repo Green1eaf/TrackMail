@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostalPackage extends AbstractBaseEntity {
+public class PostalPackage extends Identifiable {
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private PostalPackageType type;

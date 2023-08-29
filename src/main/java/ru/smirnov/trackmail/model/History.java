@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class History extends AbstractBaseEntity {
+public class History extends Identifiable {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;

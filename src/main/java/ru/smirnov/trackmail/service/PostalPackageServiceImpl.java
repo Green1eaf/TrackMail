@@ -26,11 +26,12 @@ import static ru.smirnov.trackmail.mapper.PostalPackageMapper.toPostalPackage;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class PostalPackageServiceImpl {
+public class PostalPackageServiceImpl implements PostalPackageService {
     private final PostalPackageRepository postalPackageRepository;
     private final HistoryRepository historyRepository;
     private final PostOfficeRepository postOfficeRepository;
 
+    @Override
     @Transactional
     public PostalPackageDto register(PostalPackageDto postalPackageDto, long officeId) {
         //Проверяем существует ли почтовое отделение
@@ -52,6 +53,7 @@ public class PostalPackageServiceImpl {
         return toDto(postalPackageRepository.save(postalPackage));
     }
 
+    @Override
     @Transactional
     public PostalPackageDto arrivedToNextPostOffice(long postalPackageId, long officeId) {
         //Проверяем существует ли почтовое отделение
@@ -71,6 +73,7 @@ public class PostalPackageServiceImpl {
         return toDto(postalPackage);
     }
 
+    @Override
     @Transactional
     public PostalPackageDto departedFromPostOffice(long postalPackageId, long officeId) {
         //Проверяем существует ли почтовое отделение
@@ -90,6 +93,7 @@ public class PostalPackageServiceImpl {
         return toDto(postalPackage);
     }
 
+    @Override
     @Transactional
     public PostalPackageDto receivedByAddressee(long postalPackageId) {
         //Проверяем существует ли почтовое отправление
@@ -104,6 +108,7 @@ public class PostalPackageServiceImpl {
         return toDto(postalPackage);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<HistoryDto> findAllHistoryByPostalPackageId(long id) {
         //Проверяем существует ли почтовое отправление
@@ -116,6 +121,7 @@ public class PostalPackageServiceImpl {
                 .collect(Collectors.toList());
     }
 
+    @Override
     @Transactional(readOnly = true)
     public HistoryDto findStatusOfPostalPackageById(long id) {
         //Проверяем существует ли почтовое отправление

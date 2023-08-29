@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostOffice extends AbstractBaseEntity {
+public class PostOffice extends Identifiable {
     @Column(name = "name")
     private String name;
 

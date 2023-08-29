@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @Data
-public abstract class AbstractBaseEntity implements HasId {
+public abstract class Identifiable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

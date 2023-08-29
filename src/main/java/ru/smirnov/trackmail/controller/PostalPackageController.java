@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.smirnov.trackmail.dto.HistoryDto;
 import ru.smirnov.trackmail.dto.PostalPackageDto;
-import ru.smirnov.trackmail.service.PostalPackageServiceImpl;
+import ru.smirnov.trackmail.service.PostalPackageService;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 public class PostalPackageController {
-    private final PostalPackageServiceImpl postalPackageService;
+    private final PostalPackageService postalPackageService;
     private static final String OFFICE_ID = "X-Sharer-Office-Id";
     private static final String POSTAL_PACKAGE_ID = "X-Sharer-Postal-Package-Id";
 
