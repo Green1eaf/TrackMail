@@ -154,7 +154,7 @@ public class PostalPackageControllerTest {
                 .officeAddress("address")
                 .status(Status.ARRIVED)
                 .build();
-        when(service.findAllHistoryByPostalPackageId(anyLong()))
+        when(service.findAllHistoryByPostalPackageId(anyLong(), anyInt(), anyInt()))
                 .thenReturn(List.of(historyDto));
 
         mvc.perform(get("/packages/1")
@@ -165,7 +165,7 @@ public class PostalPackageControllerTest {
                 .andExpect(jsonPath("$.[0].officeAddress", is(historyDto.getOfficeAddress())))
                 .andExpect(jsonPath("$.[0].status", is(historyDto.getStatus().name())));
 
-        verify(service, times(1)).findAllHistoryByPostalPackageId(anyLong());
+        verify(service, times(1)).findAllHistoryByPostalPackageId(anyLong(), anyInt(), anyInt());
     }
 
     @Test

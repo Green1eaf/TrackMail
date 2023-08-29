@@ -46,9 +46,11 @@ public class PostalPackageController {
     }
 
     @GetMapping("/{id}")
-    public List<HistoryDto> findAllHistoryByPostalPackageId(@PathVariable long id) {
+    public List<HistoryDto> findAllHistoryByPostalPackageId(@PathVariable long id,
+                                                            @RequestParam(value = "from", required = false, defaultValue = "0") int from,
+                                                            @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
         log.info("GET: /package/{} = controller findAllHistoryByPostalPackageId", id);
-        return postalPackageService.findAllHistoryByPostalPackageId(id);
+        return postalPackageService.findAllHistoryByPostalPackageId(id, from, size);
     }
 
     @GetMapping("/status/{id}")

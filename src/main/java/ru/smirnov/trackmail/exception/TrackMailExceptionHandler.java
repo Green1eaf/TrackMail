@@ -23,6 +23,13 @@ public class TrackMailExceptionHandler {
         return new ResponseError(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler({BadRequestException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseError badRequestHandle(Exception exception) {
+        log.error(exception.getMessage());
+        return new ResponseError(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @Getter
     @RequiredArgsConstructor
     private static class ResponseError {

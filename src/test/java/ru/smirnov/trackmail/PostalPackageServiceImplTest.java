@@ -149,9 +149,11 @@ public class PostalPackageServiceImplTest {
         when(postalPackageRepository.findById(anyLong()))
                 .thenReturn(Optional.of(PostalPackageMapper.toPostalPackage(postalPackageDto)));
         long postalPackageId = 1L;
+        int from = 0;
+        int size = 1;
 
         assertArrayEquals(List.of(HistoryMapper.toDto(history)).toArray(),
-                service.findAllHistoryByPostalPackageId(postalPackageId).toArray());
+                service.findAllHistoryByPostalPackageId(postalPackageId, from, size).toArray());
 
         verify(postalPackageRepository, times(1)).findById(anyLong());
         verify(historyRepository, times(1)).findAllByPostalPackageIdOrderByDateTimeDesc(anyLong());

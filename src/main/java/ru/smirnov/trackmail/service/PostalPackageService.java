@@ -20,7 +20,7 @@ public interface PostalPackageService {
     PostalPackageDto receivedByAddressee(long postalPackageId);
 
     @Transactional(readOnly = true)
-    List<HistoryDto> findAllHistoryByPostalPackageId(long id);
+    List<HistoryDto> findAllHistoryByPostalPackageId(long id, int from, int size);
 
     @Transactional(readOnly = true)
     HistoryDto findStatusOfPostalPackageById(long id);

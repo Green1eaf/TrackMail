@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.smirnov.trackmail.dto.HistoryDto;
 import ru.smirnov.trackmail.dto.PostalPackageDto;
+import ru.smirnov.trackmail.exception.BadRequestException;
 import ru.smirnov.trackmail.exception.NotFoundException;
 import ru.smirnov.trackmail.mapper.HistoryMapper;
 import ru.smirnov.trackmail.model.PostOffice;
@@ -110,15 +111,15 @@ public class PostalPackageServiceImpl implements PostalPackageService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<HistoryDto> findAllHistoryByPostalPackageId(long id) {
+    public List<HistoryDto> findAllHistoryByPostalPackageId(long id, int from, int size) {
         //Проверяем существует ли почтовое отправление
         getPostalPackageIfExists(id);
 
         //Возвращаем полную историю перемещения почтового отправления
         log.info("Service: find all history by postalPackageId");
-        return historyRepository.findAllByPostalPackageIdOrderByDateTimeDesc(id).stream()
+        return pagination(from, size, historyRepository.findAllByPostalPackageIdOrderByDateTimeDesc(id).stream()
                 .map(HistoryMapper::toDto)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -129,6 +130,21 @@ public class PostalPackageServiceImpl implements PostalPackageService {
 
         log.info("Service: find latest History by postalPackageId");
         return HistoryMapper.toDto(historyRepository.findFirstByPostalPackageIdOrderByDateTimeDesc(id));
+    }
+
+    /**
+     * Метод реализует пагинацию
+     *
+     * @return List<HistoryDto>
+     */
+    private List<HistoryDto> pagination(int from, int size, List<HistoryDto> list) {
+        if (from < 0 || size <= 0) {
+            throw new BadRequestException("Bad request: from must be < 0, and size must be <=0");
+        }
+        return list.stream()
+                .skip(from)
+                .limit(size)
+                .collect(Collectors.toList());
     }
 
     /**
